@@ -31,7 +31,7 @@
                 </h1>
 
                 <p class="mt-4 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-                    Load an image from disk, preview it instantly, then run thresholding, histogram operations, filtering, noise injection, edge detection, segmentation, morphology, enhancement, and compression from one interface.
+                    Load an image from disk, preview it instantly, then run histogram, noise, filtering, edge detection, segmentation, morphology, and evaluation operations from one interface.
                 </p>
 
                 <div class="mt-8 grid gap-3 sm:grid-cols-3">
@@ -92,18 +92,14 @@
                                 <h3 class="mt-2 font-display text-2xl font-bold text-white" data-operation-title>Grayscale</h3>
                                 <p class="mt-2 max-w-xl text-sm leading-6 text-slate-300" data-operation-help>Convert the image to a monochrome view.</p>
                             </div>
-
-                            <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-right">
-                                <p class="text-xs uppercase tracking-[0.25em] text-slate-500">Parameter</p>
-                                <p class="mt-2 text-sm font-semibold text-white" data-operation-key>grayscale</p>
-                            </div>
+                            <span class="sr-only" data-operation-key>grayscale</span>
                         </div>
 
                         <div class="mt-5 grid gap-4 md:grid-cols-2">
                             <div class="space-y-2">
-                                <label class="text-sm font-medium text-slate-200" for="operation-value" data-value-label>Operation value</label>
+                                <label class="text-sm font-medium text-slate-200" for="operation-value" data-value-label>Parameter</label>
                                 <input id="operation-value" class="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20" type="number" value="0" data-value-input>
-                                <p class="text-xs text-slate-400" data-value-help>No numeric parameter required for this operation.</p>
+                                <p class="text-xs text-slate-400" data-value-help>Set a value only when the selected operation needs one.</p>
                             </div>
 
                             <div class="flex flex-col gap-3 md:items-end md:justify-end">
@@ -176,6 +172,10 @@
                             </div>
                         </figure>
 
+                        <a class="hidden inline-flex items-center justify-center rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300" data-download-button download>
+                            Download result
+                        </a>
+
                         <div class="rounded-[1.5rem] border border-white/10 bg-slate-950/45 p-4 text-sm text-slate-300" data-status>
                             Upload an image, choose a processing tool, and run the operation.
                         </div>
@@ -189,34 +189,29 @@
                     <p class="mt-2 text-sm text-slate-300">Choose a category to view related image processing tools and examples.</p>
 
                     <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                        <a href="{{ route('tools', ['slug' => 'core']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
-                            <h3 class="font-semibold text-white">Basics</h3>
-                            <p class="mt-1 text-xs text-slate-400">Load, grayscale, invert, sepia</p>
-                        </a>
-
                         <a href="{{ route('tools', ['slug' => 'histogram']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
                             <h3 class="font-semibold text-white">Histogram</h3>
-                            <p class="mt-1 text-xs text-slate-400">Equalize, stretch, histogram analysis</p>
-                        </a>
-
-                        <a href="{{ route('tools', ['slug' => 'thresholding']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
-                            <h3 class="font-semibold text-white">Thresholding</h3>
-                            <p class="mt-1 text-xs text-slate-400">Binary, Otsu, adaptive methods</p>
+                            <p class="mt-1 text-xs text-slate-400">Show histogram, stretching, equalization</p>
                         </a>
 
                         <a href="{{ route('tools', ['slug' => 'noise']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
                             <h3 class="font-semibold text-white">Noise</h3>
-                            <p class="mt-1 text-xs text-slate-400">Add Gaussian, salt & pepper, speckle</p>
+                            <p class="mt-1 text-xs text-slate-400">Gaussian, Salt & Pepper, Speckle, Poisson</p>
                         </a>
 
                         <a href="{{ route('tools', ['slug' => 'filtering']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
                             <h3 class="font-semibold text-white">Filtering</h3>
-                            <p class="mt-1 text-xs text-slate-400">Blur, median, bilateral, sharpen</p>
+                            <p class="mt-1 text-xs text-slate-400">Mean, Gaussian, Median, KNN, Sigma, SNN, Min/Max, NAGAO</p>
+                        </a>
+
+                        <a href="{{ route('tools', ['slug' => 'edges']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
+                            <h3 class="font-semibold text-white">Edge Detection</h3>
+                            <p class="mt-1 text-xs text-slate-400">Roberts, Prewitt, Sobel, Laplacian, LoG, Canny</p>
                         </a>
 
                         <a href="{{ route('tools', ['slug' => 'segmentation']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
                             <h3 class="font-semibold text-white">Segmentation</h3>
-                            <p class="mt-1 text-xs text-slate-400">K-means, watershed and region split</p>
+                            <p class="mt-1 text-xs text-slate-400">Thresholding, Region Growing, Split&Merge, K-means, FCM</p>
                         </a>
 
                         <a href="{{ route('tools', ['slug' => 'morphology']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
@@ -224,9 +219,9 @@
                             <p class="mt-1 text-xs text-slate-400">Erode, dilate, open, close</p>
                         </a>
 
-                        <a href="{{ route('tools', ['slug' => 'enhancement']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
-                            <h3 class="font-semibold text-white">Enhancement</h3>
-                            <p class="mt-1 text-xs text-slate-400">Brightness, contrast, gamma, CLAHE</p>
+                        <a href="{{ route('tools', ['slug' => 'evaluation']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
+                            <h3 class="font-semibold text-white">Evaluation</h3>
+                            <p class="mt-1 text-xs text-slate-400">MSE, PSNR, IoU, Dice (if reference available)</p>
                         </a>
                     </div>
                 </div>

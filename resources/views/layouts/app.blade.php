@@ -34,14 +34,14 @@
     @php
         $navItems = [
             ['label' => 'Home', 'route' => 'home', 'active' => request()->routeIs('home')],
-            ['label' => 'Basics', 'route' => ['tools', ['slug' => 'core']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'core'],
+            ['label' => 'Basics', 'route' => 'basics', 'active' => request()->routeIs('basics')],
             ['label' => 'Histogram', 'route' => ['tools', ['slug' => 'histogram']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'histogram'],
-            ['label' => 'Thresholding', 'route' => ['tools', ['slug' => 'thresholding']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'thresholding'],
             ['label' => 'Noise', 'route' => ['tools', ['slug' => 'noise']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'noise'],
             ['label' => 'Filtering', 'route' => ['tools', ['slug' => 'filtering']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'filtering'],
+            ['label' => 'Edge Detection', 'route' => ['tools', ['slug' => 'edges']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'edges'],
             ['label' => 'Segmentation', 'route' => ['tools', ['slug' => 'segmentation']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'segmentation'],
             ['label' => 'Morphology', 'route' => ['tools', ['slug' => 'morphology']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'morphology'],
-            ['label' => 'Enhancement', 'route' => ['tools', ['slug' => 'enhancement']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'enhancement'],
+            ['label' => 'Evaluation', 'route' => ['tools', ['slug' => 'evaluation']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'evaluation'],
             ['label' => 'Help', 'route' => 'help', 'active' => request()->routeIs('help')],
         ];
     @endphp

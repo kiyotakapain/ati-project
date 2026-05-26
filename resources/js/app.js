@@ -1,38 +1,52 @@
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
 
 const operationSettings = {
-    grayscale: { label: 'Grayscale', defaultValue: 0, requiresValue: false },
-    invert: { label: 'Invert', defaultValue: 0, requiresValue: false },
-    sepia: { label: 'Sepia', defaultValue: 0, requiresValue: false },
-    stretch: { label: 'Stretch', defaultValue: 0, requiresValue: false },
-    equalize: { label: 'Equalize', defaultValue: 0, requiresValue: false },
-    histogram: { label: 'Histogram', defaultValue: 0, requiresValue: false },
-    analysis: { label: 'Analysis', defaultValue: 0, requiresValue: false },
-    threshold: { label: 'Binary Threshold', defaultValue: 127, requiresValue: true, min: 0, max: 255, step: 1, help: 'Set the cutoff between black and white.' },
-    otsu: { label: 'Otsu', defaultValue: 0, requiresValue: false },
-    adaptive: { label: 'Adaptive', defaultValue: 0, requiresValue: false },
-    blur: { label: 'Gaussian Blur', defaultValue: 5, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
-    median: { label: 'Median Filter', defaultValue: 5, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
-    sharpen: { label: 'Sharpen', defaultValue: 0, requiresValue: false },
-    bilateral: { label: 'Bilateral', defaultValue: 9, requiresValue: true, min: 1, max: 31, step: 1, help: 'Diameter controls the filter footprint.' },
-    gaussian_noise: { label: 'Gaussian Noise', defaultValue: 20, requiresValue: true, min: 1, max: 100, step: 1, help: 'Value is the standard deviation.' },
-    salt_pepper_noise: { label: 'Salt & Pepper Noise', defaultValue: 5, requiresValue: true, min: 1, max: 30, step: 1, help: 'Value is the percentage of corrupted pixels.' },
-    speckle_noise: { label: 'Speckle Noise', defaultValue: 10, requiresValue: true, min: 1, max: 50, step: 1, help: 'Value is the noise strength.' },
-    canny: { label: 'Canny', defaultValue: 100, requiresValue: true, min: 1, max: 255, step: 1, help: 'Controls the low threshold.' },
-    sobel: { label: 'Sobel', defaultValue: 0, requiresValue: false },
-    laplacian: { label: 'Laplacian', defaultValue: 0, requiresValue: false },
-    erode: { label: 'Erode', defaultValue: 3, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
-    dilate: { label: 'Dilate', defaultValue: 3, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
-    open: { label: 'Open', defaultValue: 3, requiresValue: true, min: 1, max: 31, step: 2, help: 'Opening removes small bright spots.' },
-    close: { label: 'Close', defaultValue: 3, requiresValue: true, min: 1, max: 31, step: 2, help: 'Closing fills small dark gaps.' },
-    brightness: { label: 'Brightness', defaultValue: 25, requiresValue: true, min: -100, max: 100, step: 1, help: 'Negative values darken the image.' },
-    contrast: { label: 'Contrast', defaultValue: 20, requiresValue: true, min: -100, max: 100, step: 1, help: 'Negative values flatten the contrast.' },
-    gamma: { label: 'Gamma', defaultValue: 1.2, requiresValue: true, min: 0.1, max: 5, step: 0.1, help: 'Gamma values above 1 brighten shadows less aggressively.' },
-    clahe: { label: 'CLAHE', defaultValue: 0, requiresValue: false },
-    resize: { label: 'Resize', defaultValue: 100, requiresValue: true, min: 20, max: 200, step: 10, help: 'Value is a percentage scale.' },
-    compress: { label: 'Compress', defaultValue: 85, requiresValue: true, min: 5, max: 100, step: 1, help: 'Value is JPEG quality.' },
-    kmeans: { label: 'K-Means', defaultValue: 4, requiresValue: true, min: 2, max: 10, step: 1, help: 'Value is the number of color clusters.' },
-    watershed: { label: 'Watershed', defaultValue: 0, requiresValue: false },
+    grayscale: { label: 'Grayscale', defaultValue: 0, requiresValue: false, help: 'Convert the image to grayscale.' },
+    invert: { label: 'Invert', defaultValue: 0, requiresValue: false, help: 'Invert the image colors.' },
+    blur: { label: 'Blur', defaultValue: 5, requiresValue: true, min: 1, max: 31, step: 1, help: 'Blur strength. Use an odd value.' },
+
+    histogram_show: { label: 'Show histogram', defaultValue: 0, requiresValue: false },
+    histogram_stretching: { label: 'Stretching', defaultValue: 0, requiresValue: false },
+    histogram_equalization: { label: 'Equalization', defaultValue: 0, requiresValue: false },
+
+    noise_gaussian: { label: 'Gaussian', defaultValue: 20, requiresValue: true, min: 1, max: 100, step: 1, help: 'Gaussian noise level.' },
+    noise_salt_pepper: { label: 'Salt & Pepper', defaultValue: 5, requiresValue: true, min: 1, max: 30, step: 1, help: 'Salt & Pepper noise level.' },
+    noise_speckle: { label: 'Speckle', defaultValue: 10, requiresValue: true, min: 1, max: 50, step: 1, help: 'Speckle noise level.' },
+    noise_poisson: { label: 'Poisson', defaultValue: 15, requiresValue: true, min: 1, max: 100, step: 1, help: 'Poisson noise level.' },
+
+    filter_mean: { label: 'Mean', defaultValue: 5, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
+    filter_gaussian: { label: 'Gaussian', defaultValue: 5, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
+    filter_median: { label: 'Median', defaultValue: 5, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
+    filter_knn: { label: 'KNN', defaultValue: 9, requiresValue: true, min: 1, max: 31, step: 1, help: 'Neighborhood size.' },
+    filter_sigma: { label: 'Sigma', defaultValue: 9, requiresValue: true, min: 1, max: 31, step: 1, help: 'Neighborhood size.' },
+    filter_snn: { label: 'SNN', defaultValue: 5, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
+    filter_minmax: { label: 'Min/Max', defaultValue: 5, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
+    filter_nagao: { label: 'NAGAO', defaultValue: 9, requiresValue: true, min: 1, max: 31, step: 1, help: 'Neighborhood size.' },
+
+    edge_roberts: { label: 'Roberts', defaultValue: 0, requiresValue: false },
+    edge_prewitt: { label: 'Prewitt', defaultValue: 0, requiresValue: false },
+    edge_sobel: { label: 'Sobel', defaultValue: 0, requiresValue: false },
+    edge_laplacian: { label: 'Laplacian', defaultValue: 0, requiresValue: false },
+    edge_log: { label: 'LoG', defaultValue: 0, requiresValue: false },
+    edge_canny: { label: 'Canny', defaultValue: 100, requiresValue: true, min: 1, max: 255, step: 1, help: 'Canny low threshold.' },
+
+    seg_simple_threshold: { label: 'Thresholding (Simple)', defaultValue: 127, requiresValue: true, min: 0, max: 255, step: 1, help: 'Threshold value.' },
+    seg_double_threshold: { label: 'Thresholding (Double)', defaultValue: 127, requiresValue: true, min: 0, max: 255, step: 1, help: 'Threshold value.' },
+    seg_otsu: { label: 'Thresholding (Otsu)', defaultValue: 0, requiresValue: false },
+    seg_region_growing: { label: 'Region Growing', defaultValue: 4, requiresValue: true, min: 2, max: 10, step: 1, help: 'Cluster count proxy.' },
+    seg_split_merge: { label: 'Split&Merge', defaultValue: 4, requiresValue: true, min: 2, max: 10, step: 1, help: 'Cluster count proxy.' },
+    seg_kmeans: { label: 'K-means', defaultValue: 4, requiresValue: true, min: 2, max: 10, step: 1, help: 'Number of clusters.' },
+    seg_fcm: { label: 'FCM', defaultValue: 4, requiresValue: true, min: 2, max: 10, step: 1, help: 'Number of clusters.' },
+
+    morph_erosion: { label: 'Erosion', defaultValue: 3, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
+    morph_dilation: { label: 'Dilation', defaultValue: 3, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
+    morph_opening: { label: 'Opening', defaultValue: 3, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
+    morph_closing: { label: 'Closing', defaultValue: 3, requiresValue: true, min: 1, max: 31, step: 2, help: 'Kernel size should be odd.' },
+
+    eval_mse: { label: 'MSE', defaultValue: 0, requiresValue: false, help: 'Requires reference image (not yet implemented in backend).' },
+    eval_psnr: { label: 'PSNR', defaultValue: 0, requiresValue: false, help: 'Requires reference image (not yet implemented in backend).' },
+    eval_iou: { label: 'IoU', defaultValue: 0, requiresValue: false, help: 'Requires reference image (not yet implemented in backend).' },
+    eval_dice: { label: 'Dice', defaultValue: 0, requiresValue: false, help: 'Requires reference image (not yet implemented in backend).' },
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -96,12 +110,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const originalStatus = document.querySelector('[data-original-status]');
     const processedStatus = document.querySelector('[data-processed-status]');
 
-    if (!uploadForm || !imageInput || !fileLabel || !processButton || !resetButton || !operationButtons.length || !operationTitle || !operationHelp || !operationKey || !valueInput || !valueLabel || !valueHelp || !originalPreview || !processedPreview || !originalPlaceholder || !processedPlaceholder || !downloadButton || !statusBox || !originalStatus || !processedStatus) {
-        return;
-    }
+    // Don't abort entirely if some UI parts are missing. Initialize upload handlers
+    // when the upload form is present, and initialize operation-specific UI only
+    // when those elements exist.
 
     let uploadedName = '';
-    let currentOperation = 'grayscale';
+    let currentOperation = document.querySelector('[data-default-operation]')?.dataset.defaultOperation ?? 'histogram_show';
 
     const setStatus = (message) => {
         if (statusBox) {
@@ -128,101 +142,128 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateOperation = (operationName, button = null) => {
         currentOperation = operationName;
 
-        const settings = operationSettings[operationName] ?? operationSettings.grayscale;
+        const settings = operationSettings[operationName] ?? operationSettings.histogram_show;
 
         operationTitle.textContent = settings.label;
         operationKey.textContent = operationName;
         operationHelp.textContent = settings.help ?? 'No additional description available.';
 
-        if (settings.requiresValue) {
-            valueInput.parentElement.classList.remove('hidden');
-            valueLabel.textContent = `${settings.label} value`;
-            valueInput.value = settings.defaultValue;
-            valueInput.min = settings.min ?? valueInput.min;
-            valueInput.max = settings.max ?? valueInput.max;
-            valueInput.step = settings.step ?? valueInput.step;
-            valueInput.placeholder = String(settings.defaultValue);
-            valueHelp.textContent = settings.help ?? 'Adjust the numeric parameter before processing.';
-        } else {
-            valueInput.parentElement.classList.add('hidden');
-            valueInput.value = settings.defaultValue ?? 0;
-            valueHelp.textContent = 'No numeric parameter is needed for this tool.';
+        // Only touch parameter UI if it exists in the DOM.
+        if (valueInput && valueLabel && valueHelp) {
+            if (settings.requiresValue) {
+                if (valueInput.parentElement) valueInput.parentElement.classList.remove('hidden');
+                valueLabel.textContent = `${settings.label} value`;
+                valueInput.value = settings.defaultValue;
+                if (settings.min !== undefined) valueInput.min = settings.min;
+                if (settings.max !== undefined) valueInput.max = settings.max;
+                if (settings.step !== undefined) valueInput.step = settings.step;
+                valueInput.placeholder = String(settings.defaultValue);
+                valueHelp.textContent = settings.help ?? 'Adjust the numeric parameter before processing.';
+            } else {
+                if (valueInput.parentElement) valueInput.parentElement.classList.add('hidden');
+                valueInput.value = settings.defaultValue ?? 0;
+                valueHelp.textContent = 'No numeric parameter is needed for this tool.';
+            }
         }
 
         operationButtons.forEach((item) => {
             item.classList.remove('border-cyan-300/50', 'bg-slate-950/80', 'ring-2', 'ring-cyan-400/30');
+            item.setAttribute('aria-pressed', 'false');
         });
 
         if (button) {
             button.classList.add('border-cyan-300/50', 'bg-slate-950/80', 'ring-2', 'ring-cyan-400/30');
+            button.setAttribute('aria-pressed', 'true');
         }
     };
 
-    updateOperation(currentOperation, document.querySelector('[data-operation="grayscale"]'));
+    // Operation-specific initialization (only require operation UI elements)
+    if (operationButtons && operationButtons.length && operationTitle && operationHelp && operationKey) {
+        updateOperation(currentOperation, document.querySelector('[data-operation="histogram_show"]'));
 
-    operationButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            updateOperation(button.dataset.operation ?? 'grayscale', button);
-            setStatus(`Selected ${button.dataset.label ?? button.dataset.operation}. Upload an image or run the operation if one is already loaded.`);
-        });
-    });
-
-    imageInput.addEventListener('change', () => {
-        const file = imageInput.files?.[0];
-
-        if (file) {
-            fileLabel.textContent = file.name;
-        } else {
-            fileLabel.textContent = 'Choose an image';
-        }
-    });
-
-    uploadForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        const file = imageInput.files?.[0];
-
-        if (!file) {
-            setStatus('Please choose an image file first.');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('image', file);
-
-        processButton.disabled = true;
-        setStatus('Uploading image...');
-
-        try {
-            const response = await fetch('/upload', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                },
-                body: formData,
+        operationButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                updateOperation(button.dataset.operation ?? 'histogram_show', button);
+                setStatus(`Selected ${button.dataset.label ?? button.dataset.operation}. Upload an image or run the operation if one is already loaded.`);
             });
+        });
+    }
 
-            if (!response.ok) {
-                const payload = await response.json().catch(() => ({}));
-                throw new Error(payload.message ?? 'Upload failed.');
+    // Upload handlers (initialize when upload form exists)
+    if (uploadForm && imageInput) {
+        imageInput.addEventListener('change', () => {
+            const file = imageInput.files?.[0];
+
+            if (file) {
+                fileLabel.textContent = file.name;
+            } else {
+                fileLabel.textContent = 'Choose an image';
+            }
+        });
+
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const file = imageInput.files?.[0];
+
+            if (!file) {
+                setStatus('Please choose an image file first.');
+                return;
             }
 
-            const payload = await response.json();
-            uploadedName = payload.name;
-            setPreview(originalPreview, originalPlaceholder, payload.url);
-            processButton.disabled = false;
-            downloadButton.classList.add('hidden');
-            processedPreview?.removeAttribute('src');
-            processedPreview?.classList.add('hidden');
-            processedPlaceholder?.classList.remove('hidden');
-            originalStatus.textContent = 'Loaded';
-            processedStatus.textContent = 'Waiting for processing';
-            setStatus('Image uploaded successfully. Choose an operation and run processing.');
-        } catch (error) {
-            setStatus(error.message ?? 'Upload failed.');
-        }
-    });
+            const formData = new FormData();
+            formData.append('image', file);
+
+            if (typeof processButton !== 'undefined' && processButton) {
+                processButton.disabled = true;
+            }
+            setStatus('Uploading image...');
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const payload = await response.json().catch(() => ({}));
+                    throw new Error(payload.message ?? 'Upload failed.');
+                }
+
+                const payload = await response.json();
+                uploadedName = payload.name;
+                if (originalPreview && originalPlaceholder) {
+                    setPreview(originalPreview, originalPlaceholder, payload.url);
+                }
+                if (processButton) {
+                    processButton.disabled = false;
+                }
+                if (downloadButton) {
+                    downloadButton.classList.add('hidden');
+                }
+                if (processedPreview) {
+                    processedPreview.removeAttribute('src');
+                    processedPreview.classList.add('hidden');
+                }
+                if (processedPlaceholder) {
+                    processedPlaceholder.classList.remove('hidden');
+                }
+                if (originalStatus) {
+                    originalStatus.textContent = 'Loaded';
+                }
+                if (processedStatus) {
+                    processedStatus.textContent = 'Waiting for processing';
+                }
+                setStatus('Image uploaded successfully. Choose an operation and run processing.');
+            } catch (error) {
+                setStatus(error.message ?? 'Upload failed.');
+            }
+        });
+    }
 
     processButton.addEventListener('click', async () => {
         if (!uploadedName) {
@@ -233,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const payload = new FormData();
         payload.append('image', uploadedName);
         payload.append('operation', currentOperation);
-        payload.append('value', valueInput.value || '0');
+        payload.append('value', (valueInput?.value) ?? '0');
 
         processButton.disabled = true;
         setStatus(`Running ${currentOperation}...`);
@@ -257,8 +298,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             setPreview(processedPreview, processedPlaceholder, `${result.processed}?t=${Date.now()}`);
             processedStatus.textContent = 'Done';
-            downloadButton.href = result.download_url;
-            downloadButton.classList.remove('hidden');
+            if (downloadButton) {
+                downloadButton.href = result.download_url;
+                downloadButton.classList.remove('hidden');
+            }
             setStatus(result.message || `${currentOperation} completed successfully.`);
         } catch (error) {
             setStatus(error.message ?? 'Processing failed.');
@@ -273,7 +316,10 @@ document.addEventListener('DOMContentLoaded', () => {
         imageInput.value = '';
         fileLabel.textContent = 'Choose an image';
         processButton.disabled = true;
-        downloadButton.classList.add('hidden');
+        if (downloadButton) {
+            downloadButton.classList.add('hidden');
+            downloadButton.removeAttribute('href');
+        }
         setPreview(originalPreview, originalPlaceholder, '');
         setPreview(processedPreview, processedPlaceholder, '');
         originalStatus.textContent = 'Waiting for upload';
