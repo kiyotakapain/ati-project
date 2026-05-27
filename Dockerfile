@@ -16,9 +16,10 @@ RUN apt-get update \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libicu-dev \
     zip \
     libzip-dev \
-  && docker-php-ext-install pdo pdo_mysql gd zip \
+  && docker-php-ext-install pdo pdo_mysql gd zip mbstring bcmath xml intl \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -35,7 +36,9 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
   && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
   && rm composer-setup.php
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist || true
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-progress
+RUN composer dump-autoload -o
 
 # Ensure storage and cache directories exist
 RUN mkdir -p storage framework/cache bootstrap/cache public/processed public/uploads \
