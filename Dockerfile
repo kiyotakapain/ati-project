@@ -25,9 +25,6 @@ RUN apt-get update \
 
 WORKDIR /var/www/html
 
-# Copy built frontend assets
-COPY --from=build /app/public/build public/build
-
 # Copy application source
 COPY . /var/www/html
 
@@ -44,6 +41,9 @@ RUN composer dump-autoload -o
 RUN mkdir -p storage framework/cache bootstrap/cache public/processed public/uploads \
   && touch database/database.sqlite \
   && chown -R www-data:www-data /var/www/html
+
+# Copy built frontend assets last so the manifest is present in the final image
+COPY --from=build /app/public/build /var/www/html/public/build
 
 COPY deploy/nginx.conf /etc/nginx/nginx.conf
 COPY deploy/start.sh /start.sh
