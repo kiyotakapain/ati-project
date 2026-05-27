@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: ati-project-web
+    env: docker
+    repo: https://github.com/kiyotakapain/ati-project
+    branch: main
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: 'false'
+      - key: APP_URL
+        value: https://<your-app>.onrender.com
+
+  - type: worker
+    name: ati-project-worker
+    env: docker
+    repo: https://github.com/kiyotakapain/ati-project
+    branch: main
+    dockerfilePath: Dockerfile
+    startCommand: php artisan queue:work --sleep=3 --tries=3
