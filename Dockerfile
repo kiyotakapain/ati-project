@@ -1,5 +1,5 @@
 # Multi-stage build: build frontend then build PHP image with Nginx+PHP-FPM
-FROM node:18 AS build
+FROM node:20 AS build
 WORKDIR /app
 COPY package*.json vite.config.js ./
 COPY resources resources
