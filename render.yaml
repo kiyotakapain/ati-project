@@ -12,7 +12,7 @@ services:
       - key: APP_DEBUG
         value: 'false'
       - key: APP_URL
-        value: https://<your-app>.onrender.com
+        value: https://ati-project.onrender.com
       - key: CACHE_STORE
         value: file
       - key: SESSION_DRIVER
