@@ -42,6 +42,7 @@
             ['label' => 'Segmentation', 'route' => ['tools', ['slug' => 'segmentation']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'segmentation'],
             ['label' => 'Morphology', 'route' => ['tools', ['slug' => 'morphology']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'morphology'],
             ['label' => 'Evaluation', 'route' => ['tools', ['slug' => 'evaluation']], 'active' => request()->routeIs('tools') && request()->route('slug') === 'evaluation'],
+            ['label' => 'Multi-Operation', 'route' => 'multi-operation', 'active' => request()->routeIs('multi-operation')],
             ['label' => 'Help', 'route' => 'help', 'active' => request()->routeIs('help')],
         ];
     @endphp

@@ -41,6 +41,14 @@ class ImageController extends Controller
         ]);
     }
 
+    public function multiOperation()
+    {
+        return view('multi-operation', [
+            'operationGroups' => $this->getOperationGroups(),
+            'stats' => $this->getStats(),
+        ]);
+    }
+
     public function tools($slug = null)
     {
         $groups = $this->getOperationGroups();
@@ -87,6 +95,7 @@ class ImageController extends Controller
         $image = $data['image'];
         $operation = $data['operation'];
         $value = (float) ($data['value'] ?? 0);
+        $imageName = basename($image);
 
         [$processorOperation, $processorValue, $isImplemented] = $this->resolveProcessorOperation($operation, $value);
 
@@ -96,7 +105,11 @@ class ImageController extends Controller
             ], 422);
         }
 
-        $input = public_path(self::UPLOAD_DIR . '/' . $image);
+        $input = public_path(self::UPLOAD_DIR . '/' . $imageName);
+        if (! File::exists($input)) {
+            $input = public_path(self::PROCESSED_DIR . '/' . $imageName);
+        }
+
         if (! File::exists($input)) {
             return response()->json([
                 'message' => 'The selected image does not exist.',
@@ -105,7 +118,7 @@ class ImageController extends Controller
 
         File::ensureDirectoryExists(public_path(self::PROCESSED_DIR));
 
-        $outputName = pathinfo($image, PATHINFO_FILENAME) . '_' . $operation . '.png';
+        $outputName = pathinfo($imageName, PATHINFO_FILENAME) . '_' . $operation . '.png';
         $output = public_path(self::PROCESSED_DIR . '/' . $outputName);
 
         $python = base_path('.venv/Scripts/python.exe');
@@ -137,6 +150,7 @@ class ImageController extends Controller
 
         return response()->json([
             'processed' => asset(self::PROCESSED_DIR . '/' . $outputName),
+            'processed_name' => $outputName,
             'download_url' => route('download', ['name' => $outputName]),
             'message' => trim($result->output()),
         ]);

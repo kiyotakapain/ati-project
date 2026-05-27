@@ -109,12 +109,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusBox = document.querySelector('[data-status]');
     const originalStatus = document.querySelector('[data-original-status]');
     const processedStatus = document.querySelector('[data-processed-status]');
+    const addOperationButton = document.querySelector('[data-add-operation-button]');
+    const clearQueueButton = document.querySelector('[data-clear-queue-button]');
+    const queueList = document.querySelector('[data-operation-queue]');
+    const multiWorkflow = document.querySelector('[data-multi-workflow]') !== null;
 
     // Don't abort entirely if some UI parts are missing. Initialize upload handlers
     // when the upload form is present, and initialize operation-specific UI only
     // when those elements exist.
 
     let uploadedName = '';
+    let sourceImageName = '';
+    let pendingOperations = [];
     let currentOperation = document.querySelector('[data-default-operation]')?.dataset.defaultOperation ?? 'histogram_show';
 
     const setStatus = (message) => {
@@ -136,6 +142,164 @@ document.addEventListener('DOMContentLoaded', () => {
             image.removeAttribute('src');
             image.classList.add('hidden');
             placeholder.classList.remove('hidden');
+        }
+    };
+
+    const getCurrentSourceName = () => sourceImageName || uploadedName;
+
+    const renderQueue = () => {
+        if (!queueList) {
+            return;
+        }
+
+        queueList.innerHTML = '';
+
+        if (!pendingOperations.length) {
+            const emptyItem = document.createElement('li');
+            emptyItem.className = 'rounded-2xl border border-dashed border-white/10 bg-slate-950/30 px-4 py-3 text-slate-500';
+            emptyItem.textContent = 'No operations queued yet.';
+            queueList.appendChild(emptyItem);
+            return;
+        }
+
+        pendingOperations.forEach((step, index) => {
+            const item = document.createElement('li');
+            item.className = 'flex items-start justify-between gap-4 rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3';
+
+            const labelWrap = document.createElement('div');
+            labelWrap.className = 'min-w-0';
+
+            const title = document.createElement('p');
+            title.className = 'text-sm font-semibold text-white';
+            title.textContent = `${index + 1}. ${step.label}`;
+
+            const meta = document.createElement('p');
+            meta.className = 'mt-1 text-xs text-slate-400';
+            meta.textContent = step.requiresValue ? `Value: ${step.value}` : 'No parameter required';
+
+            labelWrap.appendChild(title);
+            labelWrap.appendChild(meta);
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:bg-white/10';
+            removeButton.textContent = 'Remove';
+            removeButton.addEventListener('click', () => {
+                pendingOperations.splice(index, 1);
+                renderQueue();
+                setStatus('Removed one step from the queue.');
+            });
+
+            item.appendChild(labelWrap);
+            item.appendChild(removeButton);
+            queueList.appendChild(item);
+        });
+    };
+
+    const queueOperation = () => {
+        const settings = operationSettings[currentOperation] ?? operationSettings.histogram_show;
+        pendingOperations.push({
+            operation: currentOperation,
+            label: settings.label,
+            value: valueInput?.value ?? settings.defaultValue,
+            requiresValue: settings.requiresValue,
+        });
+        renderQueue();
+        setStatus(`${settings.label} added to the queue.`);
+    };
+
+    const runProcessStep = async (sourceName, operation, value) => {
+        const payload = new FormData();
+        payload.append('image', sourceName);
+        payload.append('operation', operation);
+        payload.append('value', value ?? '0');
+
+        const response = await fetch('/process', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: payload,
+        });
+
+        if (!response.ok) {
+            const errorPayload = await response.json().catch(() => ({}));
+            throw new Error(errorPayload.message ?? 'Processing failed.');
+        }
+
+        return response.json();
+    };
+
+    const applyQueuedOperations = async () => {
+        if (!pendingOperations.length) {
+            setStatus('Add at least one operation before applying the queue.');
+            return;
+        }
+
+        const startingSource = getCurrentSourceName();
+        if (!startingSource) {
+            setStatus('Upload an image before applying any operation chain.');
+            return;
+        }
+
+        processButton.disabled = true;
+        if (addOperationButton) {
+            addOperationButton.disabled = true;
+        }
+        if (clearQueueButton) {
+            clearQueueButton.disabled = true;
+        }
+
+        let currentSource = startingSource;
+
+        try {
+            for (const [index, step] of pendingOperations.entries()) {
+                setStatus(`Applying ${step.label} (${index + 1}/${pendingOperations.length})...`);
+                if (processedStatus) {
+                    processedStatus.textContent = `Applying step ${index + 1}/${pendingOperations.length}`;
+                }
+
+                const result = await runProcessStep(currentSource, step.operation, step.value);
+                currentSource = result.processed_name ?? currentSource;
+                sourceImageName = currentSource;
+
+                if (originalPreview && originalPlaceholder) {
+                    setPreview(originalPreview, originalPlaceholder, result.processed);
+                }
+                if (originalStatus) {
+                    originalStatus.textContent = 'Ready for next step';
+                }
+                if (processedPreview && processedPlaceholder) {
+                    setPreview(processedPreview, processedPlaceholder, result.processed);
+                }
+                if (processedStatus) {
+                    processedStatus.textContent = 'Done';
+                }
+                if (downloadButton) {
+                    downloadButton.href = result.download_url;
+                    downloadButton.classList.remove('hidden');
+                }
+
+                setStatus(result.message || `${step.label} completed successfully.`);
+            }
+
+            pendingOperations = [];
+            renderQueue();
+            setStatus('All queued operations were applied successfully. You can add more steps or download the latest result.');
+        } catch (error) {
+            setStatus(error.message ?? 'Processing failed.');
+            if (processedStatus) {
+                processedStatus.textContent = 'Error';
+            }
+        } finally {
+            processButton.disabled = false;
+            if (addOperationButton) {
+                addOperationButton.disabled = false;
+            }
+            if (clearQueueButton) {
+                clearQueueButton.disabled = false;
+            }
         }
     };
 
@@ -179,13 +343,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Operation-specific initialization (only require operation UI elements)
     if (operationButtons && operationButtons.length && operationTitle && operationHelp && operationKey) {
-        updateOperation(currentOperation, document.querySelector('[data-operation="histogram_show"]'));
+        updateOperation(currentOperation, document.querySelector(`[data-operation="${currentOperation}"]`));
 
         operationButtons.forEach((button) => {
             button.addEventListener('click', () => {
                 updateOperation(button.dataset.operation ?? 'histogram_show', button);
                 setStatus(`Selected ${button.dataset.label ?? button.dataset.operation}. Upload an image or run the operation if one is already loaded.`);
             });
+        });
+    }
+
+    if (multiWorkflow) {
+        renderQueue();
+
+        addOperationButton?.addEventListener('click', () => {
+            queueOperation();
+        });
+
+        clearQueueButton?.addEventListener('click', () => {
+            pendingOperations = [];
+            renderQueue();
+            setStatus('Queue cleared.');
         });
     }
 
@@ -236,6 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const payload = await response.json();
                 uploadedName = payload.name;
+                sourceImageName = payload.name;
                 if (originalPreview && originalPlaceholder) {
                     setPreview(originalPreview, originalPlaceholder, payload.url);
                 }
@@ -266,38 +445,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     processButton.addEventListener('click', async () => {
-        if (!uploadedName) {
+        if (multiWorkflow) {
+            await applyQueuedOperations();
+            return;
+        }
+
+        const sourceName = getCurrentSourceName();
+
+        if (!sourceName) {
             setStatus('Upload an image before running any processing tool.');
             return;
         }
 
-        const payload = new FormData();
-        payload.append('image', uploadedName);
-        payload.append('operation', currentOperation);
-        payload.append('value', (valueInput?.value) ?? '0');
-
         processButton.disabled = true;
         setStatus(`Running ${currentOperation}...`);
-        processedStatus.textContent = 'Processing...';
+        if (processedStatus) {
+            processedStatus.textContent = 'Processing...';
+        }
 
         try {
-            const response = await fetch('/process', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                },
-                body: payload,
-            });
-
-            if (!response.ok) {
-                const errorPayload = await response.json().catch(() => ({}));
-                throw new Error(errorPayload.message ?? 'Processing failed.');
-            }
-
-            const result = await response.json();
+            const result = await runProcessStep(sourceName, currentOperation, valueInput?.value ?? '0');
             setPreview(processedPreview, processedPlaceholder, `${result.processed}?t=${Date.now()}`);
-            processedStatus.textContent = 'Done';
+            if (processedStatus) {
+                processedStatus.textContent = 'Done';
+            }
             if (downloadButton) {
                 downloadButton.href = result.download_url;
                 downloadButton.classList.remove('hidden');
@@ -305,7 +476,9 @@ document.addEventListener('DOMContentLoaded', () => {
             setStatus(result.message || `${currentOperation} completed successfully.`);
         } catch (error) {
             setStatus(error.message ?? 'Processing failed.');
-            processedStatus.textContent = 'Error';
+            if (processedStatus) {
+                processedStatus.textContent = 'Error';
+            }
         } finally {
             processButton.disabled = false;
         }
@@ -313,6 +486,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetButton.addEventListener('click', () => {
         uploadedName = '';
+        sourceImageName = '';
+        pendingOperations = [];
         imageInput.value = '';
         fileLabel.textContent = 'Choose an image';
         processButton.disabled = true;
@@ -320,10 +495,15 @@ document.addEventListener('DOMContentLoaded', () => {
             downloadButton.classList.add('hidden');
             downloadButton.removeAttribute('href');
         }
+        renderQueue();
         setPreview(originalPreview, originalPlaceholder, '');
         setPreview(processedPreview, processedPlaceholder, '');
-        originalStatus.textContent = 'Waiting for upload';
-        processedStatus.textContent = 'Waiting for processing';
+        if (originalStatus) {
+            originalStatus.textContent = 'Waiting for upload';
+        }
+        if (processedStatus) {
+            processedStatus.textContent = 'Waiting for processing';
+        }
         setStatus('Previews reset. Upload another image to continue.');
     });
 });

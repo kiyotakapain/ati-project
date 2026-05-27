@@ -9,53 +9,12 @@
     </div>
 
     <main class="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8 lg:py-10" data-default-operation="grayscale">
-        <section class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div class="glass-panel rounded-[2rem] p-6 sm:p-8">
-                <div class="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200">
-                    Basics
-                </div>
-
-                <h1 class="mt-6 max-w-3xl font-display text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
-                    Grayscale, invert, and blur in one simple page
-                </h1>
-
-                <p class="mt-4 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-                    Upload an image, pick one of the basic operations, and download the result right away. Blur can take a numeric value; grayscale and invert do not need one.
-                </p>
-
-                <div class="mt-8 grid gap-3 sm:grid-cols-3">
-                    @foreach ($stats as $item)
-                        <div class="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
-                            <p class="text-xs uppercase tracking-[0.25em] text-slate-400">{{ $item['label'] }}</p>
-                            <p class="mt-2 text-sm font-semibold text-white">{{ $item['value'] }}</p>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <div class="glass-panel rounded-[2rem] p-6 sm:p-8">
-                <div class="flex items-start justify-between gap-4">
-                    <div>
-                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Quick tools</p>
-                        <h2 class="mt-2 font-display text-2xl font-bold text-white">Basic image controls</h2>
-                    </div>
-                    <span class="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200">Fast processing</span>
-                </div>
-
-                <div class="mt-6 space-y-4 text-sm leading-6 text-slate-300">
-                    <p>Grayscale removes the color layer and keeps brightness only.</p>
-                    <p>Invert creates a negative version of the image.</p>
-                    <p>Blur smooths the image and uses the value field when you want a stronger effect.</p>
-                </div>
-            </div>
-        </section>
-
         <section class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
             <div class="glass-panel rounded-[2rem] p-6 sm:p-8">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Upload</p>
-                        <h2 class="mt-2 font-display text-2xl font-bold text-white">Choose an image and run a basic operation</h2>
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Category</p>
+                        <h2 class="mt-2 font-display text-2xl font-bold text-white">Basics</h2>
                     </div>
                     <div class="text-sm text-slate-300">3 operations</div>
                 </div>

@@ -5,6 +5,7 @@ use App\Http\Controllers\ImageController;
 
 Route::get('/', [ImageController::class, 'index'])->name('home');
 Route::get('/basics', [ImageController::class, 'basics'])->name('basics');
+Route::get('/multi-operation', [ImageController::class, 'multiOperation'])->name('multi-operation');
 Route::view('/help', 'help')->name('help');
 Route::post('/upload', [ImageController::class, 'upload'])->name('upload');
 // Provide a safe GET entry for /process (redirect to home) to avoid MethodNotAllowed

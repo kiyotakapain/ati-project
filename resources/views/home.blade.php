@@ -189,6 +189,11 @@
                     <p class="mt-2 text-sm text-slate-300">Choose a category to view related image processing tools and examples.</p>
 
                     <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <a href="{{ route('basics') }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
+                            <h3 class="font-semibold text-white">Basics</h3>
+                            <p class="mt-1 text-xs text-slate-400">Quick edits: Grayscale, Invert, Blur</p>
+                        </a>
+
                         <a href="{{ route('tools', ['slug' => 'histogram']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
                             <h3 class="font-semibold text-white">Histogram</h3>
                             <p class="mt-1 text-xs text-slate-400">Show histogram, stretching, equalization</p>
@@ -222,6 +227,16 @@
                         <a href="{{ route('tools', ['slug' => 'evaluation']) }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
                             <h3 class="font-semibold text-white">Evaluation</h3>
                             <p class="mt-1 text-xs text-slate-400">MSE, PSNR, IoU, Dice (if reference available)</p>
+                        </a>
+
+                        <a href="{{ route('multi-operation') }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
+                            <h3 class="font-semibold text-white">Multi-Operation</h3>
+                            <p class="mt-1 text-xs text-slate-400">Chain multiple operations and apply sequentially</p>
+                        </a>
+
+                        <a href="{{ route('help') }}" class="card-link rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10">
+                            <h3 class="font-semibold text-white">Help</h3>
+                            <p class="mt-1 text-xs text-slate-400">Usage guide and tool reference</p>
                         </a>
                     </div>
                 </div>
