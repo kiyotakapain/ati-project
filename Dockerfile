@@ -42,6 +42,7 @@ RUN composer dump-autoload -o
 
 # Ensure storage and cache directories exist
 RUN mkdir -p storage framework/cache bootstrap/cache public/processed public/uploads \
+  && touch database/database.sqlite \
   && chown -R www-data:www-data /var/www/html
 
 COPY deploy/nginx.conf /etc/nginx/nginx.conf

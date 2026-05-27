@@ -13,6 +13,14 @@ services:
         value: 'false'
       - key: APP_URL
         value: https://<your-app>.onrender.com
+      - key: CACHE_STORE
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /var/www/html/database/database.sqlite
 
   - type: worker
     name: ati-project-worker
